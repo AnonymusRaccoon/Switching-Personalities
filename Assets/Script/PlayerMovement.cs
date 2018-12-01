@@ -31,6 +31,11 @@ public class PlayerMovement : MonoBehaviour
     public bool hooked = false;
 
     [Space]
+    [Header("Slow Projectile")]
+    public GameObject SlowProjectile;
+    public float projSpeed = 1.2f;
+
+    [Space]
     [Space]
     [Header("SwitchMenu")]
     public GameObject switchMenu;
@@ -43,8 +48,8 @@ public class PlayerMovement : MonoBehaviour
     public GameObject hook;
     private Personalty switchingTo;
 
-    [Space]
-    public Personalty personalty;
+    private Personalty personalty;
+    private int HealPoint = 5;
     private bool isJumping = false;
     private int flip = 1;
     private bool switching = false;
@@ -230,6 +235,19 @@ public class PlayerMovement : MonoBehaviour
         {
             CalculateHook();
         }
+
+        //Heal
+        if (personalty == Personalty.Heal && Input.GetButtonDown("Action"))
+        {
+            StartHealing();
+        }
+
+        //Slow Projectiles
+        if(personalty == Personalty.SlowProj && Input.GetButtonDown("Action"))
+        {
+            GameObject proj = Instantiate(SlowProjectile);
+            proj.GetComponent<Rigidbody2D>().velocity = GetDirection() * projSpeed;
+        }
 	}
 
     private async void CalculateHook()
@@ -287,10 +305,27 @@ public class PlayerMovement : MonoBehaviour
         }
     }
 
+    private async void StartHealing()
+    {
+        await Task.Delay(3000);
+        if(personalty == Personalty.Heal)
+            HealPoint += 2;
+    }
+
     private void OnCollisionEnter2D(Collision2D collision)
     {
         if(IsGrounded)
             hasDoubleJump = true;
+
+        if (collision.gameObject.tag == "Enemy")
+            HealPoint--;
+        if (HealPoint <= 0)
+            Death();
+    }
+
+    private void Death()
+    {
+        //ON VERA APRES
     }
 
     private Vector3 GetDirection(bool useAimCorrection = true)
