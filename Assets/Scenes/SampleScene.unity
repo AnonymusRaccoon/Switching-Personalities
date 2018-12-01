@@ -253,6 +253,9 @@ MonoBehaviour:
   swingSpeed: 3
   hookRenderer: {fileID: 1872833097}
   hooked: 0
+  SlowProjectile: {fileID: 1008542846873596, guid: e53919f45383d454198636c119ecbffa,
+    type: 2}
+  projSpeed: 1.2
   switchMenu: {fileID: 1201109420}
   none: {fileID: 1948124829}
   doubleJump: {fileID: 1642985459}
@@ -261,7 +264,6 @@ MonoBehaviour:
   healer: {fileID: 191759086}
   parry: {fileID: 1877761478}
   hook: {fileID: 778760761}
-  personalty: 0
 --- !u!50 &183430348
 Rigidbody2D:
   serializedVersion: 4
