@@ -245,9 +245,9 @@ MonoBehaviour:
   objectMask:
     serializedVersion: 2
     m_Bits: 55
-  doubleJumpForce: 8
+  doubleJumpForce: 13
   hasDoubleJump: 1
-  runnerSpeed: 1.5
+  runnerSpeed: 2
   distanceJoint: {fileID: 183430351}
   hookDistance: 5
   swingSpeed: 4
@@ -255,7 +255,8 @@ MonoBehaviour:
   hooked: 0
   SlowProjectile: {fileID: 1008542846873596, guid: e53919f45383d454198636c119ecbffa,
     type: 2}
-  projSpeed: 1.2
+  projSpeed: 6
+  parryForce: 12
   switchMenu: {fileID: 1201109420}
   none: {fileID: 1948124829}
   doubleJump: {fileID: 1642985459}

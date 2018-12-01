@@ -36,6 +36,10 @@ public class PlayerMovement : MonoBehaviour
     public float projSpeed = 1.2f;
 
     [Space]
+    [Header("Parry")]
+    public float parryForce = 12f;
+
+    [Space]
     [Space]
     [Header("SwitchMenu")]
     public GameObject switchMenu;
@@ -53,6 +57,7 @@ public class PlayerMovement : MonoBehaviour
     private bool isJumping = false;
     private int flip = 1;
     private bool switching = false;
+    private bool parrying = false;
     private Rigidbody2D rb;
 
 
@@ -245,8 +250,14 @@ public class PlayerMovement : MonoBehaviour
         //Slow Projectiles
         if(personalty == Personalty.SlowProj && Input.GetButtonDown("Action"))
         {
-            GameObject proj = Instantiate(SlowProjectile);
+            GameObject proj = Instantiate(SlowProjectile, transform.position + Vector3.right * flip, Quaternion.identity);
             proj.GetComponent<Rigidbody2D>().velocity = GetDirection() * projSpeed;
+        }
+
+        //Parry
+        if(personalty == Personalty.Parry && Input.GetButtonDown("Action"))
+        {
+            Parry();
         }
 	}
 
@@ -317,6 +328,13 @@ public class PlayerMovement : MonoBehaviour
         }
     }
 
+    private async void Parry()
+    {
+        parrying = true;
+        await Task.Delay(1500);
+        parrying = false;
+    }
+
     private void OnCollisionEnter2D(Collision2D collision)
     {
         if(IsGrounded)
@@ -324,11 +342,33 @@ public class PlayerMovement : MonoBehaviour
 
         if (collision.gameObject.tag == "Enemy")
         {
-            GameObject.Find("HealPoint (" + HealPoint + ")").SetActive(false);
-            HealPoint--;
+            Damage(1);
+        }
+        else if(collision.gameObject.tag == "Projectile")
+        {
+            if (parrying)
+            {
+                rb.AddForce(new Vector2(0, parryForce), ForceMode2D.Impulse);
+                Destroy(collision.gameObject);
+                parrying = false;
+            }
+            else
+            {
+                Destroy(collision.gameObject);
+                Damage(1);
+            }
         }
         if (HealPoint <= 0)
             Death();
+    }
+
+    public void Damage(int dmg)
+    {
+        for(int i = 0; i < dmg; i++)
+        {
+            GameObject.Find("HealPoint (" + HealPoint + ")").SetActive(false);
+            HealPoint--;
+        }
     }
 
     private void Death()
