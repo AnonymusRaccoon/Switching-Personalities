@@ -83,7 +83,7 @@ public class PlayerMovement : MonoBehaviour
         return false;
     }
 
-    void Update ()
+    private void Update ()
     {
         //Basic movements and runner
         if(Mathf.Abs(Input.GetAxis("Horizontal")) > 0.2f)
@@ -309,7 +309,12 @@ public class PlayerMovement : MonoBehaviour
     {
         await Task.Delay(3000);
         if(personalty == Personalty.Heal)
-            HealPoint += 2;
+        {
+            HealPoint++;
+            GameObject.Find("HealPoint (" + HealPoint + ")").SetActive(true);
+            HealPoint++;
+            GameObject.Find("HealPoint (" + HealPoint + ")").SetActive(true);
+        }
     }
 
     private void OnCollisionEnter2D(Collision2D collision)
@@ -318,7 +323,10 @@ public class PlayerMovement : MonoBehaviour
             hasDoubleJump = true;
 
         if (collision.gameObject.tag == "Enemy")
+        {
+            GameObject.Find("HealPoint (" + HealPoint + ")").SetActive(false);
             HealPoint--;
+        }
         if (HealPoint <= 0)
             Death();
     }
