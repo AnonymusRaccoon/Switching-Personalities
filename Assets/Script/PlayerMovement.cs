@@ -364,24 +364,31 @@ public class PlayerMovement : MonoBehaviour
             if (!RunningOnAWall(Input.GetAxis("Horizontal")))
             {
                 rb.velocity = new Vector3(Input.GetAxis("Horizontal") * speed * (personalty == Personalty.Run ? runnerSpeed : 1), rb.velocity.y, 0);
-                animator.SetBool("isRunning", Mathf.Abs(Input.GetAxis("Horizontal")) > .3f);
+                animator.SetBool("isRunning", Mathf.Abs(rb.velocity.x) > .3f);
             }
             else
                 rb.velocity = new Vector3(0, rb.velocity.y, 0);
 
+            if (IsGrounded)
+            {
+                animator.SetBool("isJumping", false);
+            }
             if (Input.GetButtonDown("Jump") && IsGrounded)
             {
                 rb.AddForce(new Vector2(0, jumpForce), ForceMode2D.Impulse);
                 isJumping = true;
-                animator.SetBool("isJumping", isJumping);
+                animator.SetBool("isJumping", true);
             }
-
-            if (Input.GetButtonUp("Jump") && rb.velocity.y > 0.8f && !IsGrounded && isJumping)
+            if (Input.GetButtonUp("Jump"))
             {
-                isJumping = false;
-                rb.velocity = new Vector2(rb.velocity.x, 0);
-                rb.AddForce(new Vector2(0, -jumpDownForce * rb.velocity.y / 9), ForceMode2D.Impulse);
-                animator.SetBool("isJumping", isJumping);
+                animator.SetBool("isJumping", false);
+
+                if (rb.velocity.y > 0.8f && !IsGrounded && isJumping)
+                {
+                    isJumping = false;
+                    rb.velocity = new Vector2(rb.velocity.x, 0);
+                    rb.AddForce(new Vector2(0, -jumpDownForce * rb.velocity.y / 9), ForceMode2D.Impulse);
+                }
             }
         }
 
@@ -391,7 +398,6 @@ public class PlayerMovement : MonoBehaviour
             rb.velocity = new Vector2(rb.velocity.x, 0);
             rb.AddForce(new Vector2(0, doubleJumpForce), ForceMode2D.Impulse);
             hasDoubleJump = false;
-            animator.SetBool("isJumping", isJumping);
         }
 
         //Hook
@@ -548,7 +554,6 @@ public class PlayerMovement : MonoBehaviour
                 rb.AddForce(new Vector2(0, parryForce), ForceMode2D.Impulse);
                 Destroy(collision.gameObject);
                 parrying = false;
-                animator.SetBool("isJumping", isJumping);
             }
             else
             {
@@ -563,7 +568,6 @@ public class PlayerMovement : MonoBehaviour
                 rb.AddForce(new Vector2(0, parryForce), ForceMode2D.Impulse);
                 Destroy(collision.gameObject);
                 parrying = false;
-                animator.SetBool("isJumping", isJumping);
             }
             else
             {

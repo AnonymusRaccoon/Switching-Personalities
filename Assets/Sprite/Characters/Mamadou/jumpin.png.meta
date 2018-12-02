@@ -1,16 +1,16 @@
 fileFormatVersion: 2
-guid: 953e245c0fb3a3f428855cc778951f2e
+guid: 12660f6d1f4976d4397e202584a7e8a4
 TextureImporter:
   fileIDToRecycleName:
-    21300000: Run_0
-    21300002: Run_1
-    21300004: Run_2
-    21300006: Run_3
-    21300008: Run_4
-    21300010: Run_5
-    21300012: Run_6
-    21300014: Run_7
-    21300016: Run_8
+    21300000: jumpin_0
+    21300002: jumpin_1
+    21300004: jumpin_2
+    21300006: jumpin_3
+    21300008: jumpin_4
+    21300010: jumpin_5
+    21300012: jumpin_6
+    21300014: jumpin_7
+    21300016: jumpin_8
   externalObjects: {}
   serializedVersion: 7
   mipmaps:
@@ -104,7 +104,7 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: Run_0
+      name: jumpin_0
       rect:
         serializedVersion: 2
         x: 0
@@ -118,13 +118,13 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 819b731cea677cd4eabe4673b2910c9e
+      spriteID: d0ef140d6b4dabc41961ddc601dd7128
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Run_1
+      name: jumpin_1
       rect:
         serializedVersion: 2
         x: 500
@@ -138,13 +138,13 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 14a2556c48b56c24687711e4c131cdc7
+      spriteID: 6784a0df577c3d14e9b9430374528d74
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Run_2
+      name: jumpin_2
       rect:
         serializedVersion: 2
         x: 1000
@@ -158,13 +158,13 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 325fdd965e541d54d973313638fdf17e
+      spriteID: ea78e073b1653654996da8fe6ab1f1d4
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Run_3
+      name: jumpin_3
       rect:
         serializedVersion: 2
         x: 0
@@ -178,13 +178,13 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 0d202cb99efe22e4eb2b87b54a6dca98
+      spriteID: bb9c636d0c5f830488362230f85b257f
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Run_4
+      name: jumpin_4
       rect:
         serializedVersion: 2
         x: 500
@@ -198,13 +198,13 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 7990a0acde635764e83fb3c718dcb903
+      spriteID: 60138fe70249e9c4da2b823b250f2e7f
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Run_5
+      name: jumpin_5
       rect:
         serializedVersion: 2
         x: 1000
@@ -218,13 +218,13 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 358fbb3fffc9a864992454b931fc98f7
+      spriteID: 83aea710c401c6c42bfc7ad8eb129878
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Run_6
+      name: jumpin_6
       rect:
         serializedVersion: 2
         x: 0
@@ -238,13 +238,13 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 3620a30872bb21c41a383470adbfff0f
+      spriteID: f4ec7699c89ace74790ffd35207f7892
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Run_7
+      name: jumpin_7
       rect:
         serializedVersion: 2
         x: 500
@@ -258,13 +258,13 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: fe8491a41f2e56f4aa28162cef947821
+      spriteID: 4dfbedfcab73fa249b740fb5ef17eae5
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Run_8
+      name: jumpin_8
       rect:
         serializedVersion: 2
         x: 1000
@@ -278,7 +278,7 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 30ae4c4de4446f6468cb4854f57cac65
+      spriteID: 28c6c05b4a9edb441b948c2399f559dd
       vertices: []
       indices: 
       edges: []
@@ -286,7 +286,7 @@ TextureImporter:
     outline: []
     physicsShape: []
     bones: []
-    spriteID: 64a5547cf676e4b428567355e95db8d2
+    spriteID: bddfa6880fcc6d3439df34a64967c821
     vertices: []
     indices: 
     edges: []
