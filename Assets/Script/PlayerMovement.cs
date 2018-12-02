@@ -102,6 +102,7 @@ public class PlayerMovement : MonoBehaviour
         rb = GetComponent<Rigidbody2D>();
         collider = GetComponentInChildren<BoxCollider2D>();
         checkPoint = transform.position;
+        sacrified.Add(Personalty.Parry);
     }
 
     private bool IsGrounded
