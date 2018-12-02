@@ -14,6 +14,11 @@ public class PlayerMovement : MonoBehaviour
     public LayerMask objectMask;
 
     [Space]
+    [Header("Renderer")]
+    public new SpriteRenderer renderer;
+    public Animator animator;
+
+    [Space]
     [Header("Double Jump")]
     public float doubleJumpForce = 8;
     public bool hasDoubleJump = true;
@@ -29,6 +34,10 @@ public class PlayerMovement : MonoBehaviour
     public float swingSpeed = 3;
     public LineRenderer hookRenderer;
     public bool hooked = false;
+
+    [Space]
+    [Header("Heal")]
+    public GameObject healParticules;
 
     [Space]
     [Header("Slow Projectile")]
@@ -79,10 +88,10 @@ public class PlayerMovement : MonoBehaviour
 
     private bool RunningOnAWall(float Horizontal)
     {
-        if (Horizontal > 0 && Physics2D.Raycast(transform.position, Vector2.right, minWallDistance, objectMask))
+        if (Horizontal > 0 && Physics2D.BoxCast(transform.position, new Vector2(minWallDistance, GetComponentInChildren<BoxCollider2D>().bounds.size.y), 0, Vector2.right, minWallDistance, objectMask))
             return true;
 
-        if (Horizontal < 0 && Physics2D.Raycast(transform.position, Vector2.left, minWallDistance, objectMask))
+        if (Horizontal < 0 && Physics2D.BoxCast(transform.position, new Vector2(minWallDistance, GetComponentInChildren<BoxCollider2D>().bounds.size.y), 180, Vector2.left, minWallDistance, objectMask))
             return true;
 
         return false;
@@ -94,10 +103,15 @@ public class PlayerMovement : MonoBehaviour
         if(Mathf.Abs(Input.GetAxis("Horizontal")) > 0.2f)
             flip = Input.GetAxis("Horizontal") > 0 ? 1 : -1;
 
+        renderer.flipX = flip == -1;
+
         if (!hooked)
         {
-            if(!RunningOnAWall(Input.GetAxis("Horizontal")))
+            if (!RunningOnAWall(Input.GetAxis("Horizontal")))
+            {
                 rb.velocity = new Vector3(Input.GetAxis("Horizontal") * speed * (personalty == Personalty.Run ? runnerSpeed : 1), rb.velocity.y, 0);
+                animator.SetBool("isRunning", Mathf.Abs(Input.GetAxis("Horizontal")) > .3f);
+            }
             else
                 rb.velocity = new Vector3(0, rb.velocity.y, 0);
 
@@ -105,6 +119,7 @@ public class PlayerMovement : MonoBehaviour
             {
                 rb.AddForce(new Vector2(0, jumpForce), ForceMode2D.Impulse);
                 isJumping = true;
+                animator.SetBool("isJumping", isJumping);
             }
 
             if (Input.GetButtonUp("Jump") && rb.velocity.y > 0.8f && !IsGrounded && isJumping)
@@ -112,6 +127,7 @@ public class PlayerMovement : MonoBehaviour
                 isJumping = false;
                 rb.velocity = new Vector2(rb.velocity.x, 0);
                 rb.AddForce(new Vector2(0, -jumpDownForce * rb.velocity.y / 9), ForceMode2D.Impulse);
+                animator.SetBool("isJumping", isJumping);
             }
         }
 
@@ -215,7 +231,6 @@ public class PlayerMovement : MonoBehaviour
                     none.transform.localScale = new Vector3(1, 1, 1);
                 }
             }
-            
 
             if (Input.GetButtonUp("SwitchMenu"))
             {
@@ -233,6 +248,7 @@ public class PlayerMovement : MonoBehaviour
         {
             rb.AddForce(new Vector2(0, doubleJumpForce), ForceMode2D.Impulse);
             hasDoubleJump = false;
+            animator.SetBool("isJumping", isJumping);
         }
 
         //Hook
@@ -318,14 +334,19 @@ public class PlayerMovement : MonoBehaviour
 
     private async void StartHealing()
     {
+        healParticules.SetActive(true);
         await Task.Delay(3000);
-        if(personalty == Personalty.Heal)
+        if(personalty == Personalty.Heal && HealPoint < 5)
         {
             HealPoint++;
             GameObject.Find("HealPoint (" + HealPoint + ")").SetActive(true);
-            HealPoint++;
-            GameObject.Find("HealPoint (" + HealPoint + ")").SetActive(true);
+            if(HealPoint < 5)
+            {
+                HealPoint++;
+                GameObject.Find("HealPoint (" + HealPoint + ")").SetActive(true);
+            }
         }
+        healParticules.SetActive(false);
     }
 
     private async void Parry()
@@ -351,6 +372,7 @@ public class PlayerMovement : MonoBehaviour
                 rb.AddForce(new Vector2(0, parryForce), ForceMode2D.Impulse);
                 Destroy(collision.gameObject);
                 parrying = false;
+                animator.SetBool("isJumping", isJumping);
             }
             else
             {
