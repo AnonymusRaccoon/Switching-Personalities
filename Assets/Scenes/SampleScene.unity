@@ -5831,9 +5831,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   index: -1
   dialog:
-  - Sometimes, there is more than one way. You need to choose one or look in both
-    of them. Sometimes, you can found power up but it may be difficult to access to
-    the reward.
+  - 'You can use all your personalities''s power by using the X key (Or CTRL).
+
+    You should check what they can do here, while you are in a safe place.'
+  - You have for example, an usless way at your left. This way can allow you to train
+    your powers because you will encounter danger after this sign.
 --- !u!61 &987701041
 BoxCollider2D:
   m_ObjectHideFlags: 0
