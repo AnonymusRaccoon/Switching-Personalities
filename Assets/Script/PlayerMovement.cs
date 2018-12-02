@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using TMPro;
 using UnityEngine;
 
 [RequireComponent(typeof(Rigidbody2D))]
@@ -61,6 +62,8 @@ public class PlayerMovement : MonoBehaviour
     public GameObject hook;
     public GameObject DeathScreen;
     public GameObject[] HealPoints;
+    public TextMeshProUGUI Info;
+    public GameObject Dialog;
     private Personalty switchingTo;
 
     private Personalty personalty;
@@ -70,9 +73,10 @@ public class PlayerMovement : MonoBehaviour
     private int flip = 1;
     private bool switching = false;
     private bool parrying = false;
+    public bool useController = false;
+    private Interactable interactable;
     private Rigidbody2D rb;
     private new BoxCollider2D collider;
-
 
     private void Start()
     {
@@ -148,8 +152,12 @@ public class PlayerMovement : MonoBehaviour
             else
             {
                 float angle = Vector3.Angle(direction, Vector3.right);
-                if (Input.GetAxis("Vertical") < 0)
+
+                if ((Input.GetAxis("Vertical") < 0 && useController) || (Input.mousePosition.y < Screen.height / 2 && !useController))
                     angle = 360 - angle;
+
+
+
                 if (angle >= 0 && angle < 60)
                 {
                     run.transform.localScale = new Vector3(1.6f, 1.6f, 1.6f);
@@ -295,7 +303,7 @@ public class PlayerMovement : MonoBehaviour
         if(personalty == Personalty.SlowProj && Input.GetButtonDown("Action"))
         {
             GameObject proj = Instantiate(SlowProjectile, transform.position + Vector3.right * flip, Quaternion.identity);
-            proj.GetComponent<Rigidbody2D>().velocity = GetDirection() * projSpeed;
+            proj.GetComponent<Rigidbody2D>().velocity = GetDirection(true, true) * projSpeed;
         }
 
         //Parry
@@ -303,13 +311,31 @@ public class PlayerMovement : MonoBehaviour
         {
             Parry();
         }
+
+        //Interactions
+        if(interactable != null && Input.GetButtonDown("Interact"))
+        {
+            if (interactable.index + 1 < interactable.dialog.Length)
+            {
+                Info.gameObject.SetActive(false);
+                Dialog.SetActive(true);
+                Dialog.GetComponentInChildren<TextMeshProUGUI>().text = interactable.dialog[interactable.index + 1];
+                interactable.index++;
+            }
+            else
+            {
+                Dialog.SetActive(false);
+                interactable.index = -1;
+                Info.gameObject.SetActive(true);
+            }
+        }
 	}
 
     private async void CalculateHook()
     {
         if (Input.GetButtonDown("Action"))
         {
-            RaycastHit2D hit = Physics2D.Raycast(transform.position, GetDirection(), hookDistance, objectMask);
+            RaycastHit2D hit = Physics2D.Raycast(transform.position, GetDirection(true, true), hookDistance, objectMask);
             if (hit.collider != null)
             {
                 hooked = true;
@@ -322,7 +348,7 @@ public class PlayerMovement : MonoBehaviour
             }
             else
             {
-                hookRenderer.SetPositions(new Vector3[] { transform.position, transform.position + GetDirection() * hookDistance });
+                hookRenderer.SetPositions(new Vector3[] { transform.position, transform.position + GetDirection(true, true) * hookDistance });
                 hookRenderer.enabled = true;
                 await Task.Delay(100);
                 hookRenderer.enabled = false;
@@ -437,22 +463,62 @@ public class PlayerMovement : MonoBehaviour
             checkPoint = transform.position;
             //Play a sound
         }
+        else if (collision.tag == "Sign")
+        {
+            interactable = collision.GetComponent<Interactable>();
+            Info.text = "Sign: Press B or enter to read.";
+            Info.gameObject.SetActive(true);
+        }
     }
 
-    private Vector3 GetDirection(bool useAimCorrection = true)
+    private void OnTriggerExit2D(Collider2D collision)
     {
-        float Horizontal = Input.GetAxis("Horizontal");
-        float Vertical = Input.GetAxis("Vertical");
-
-        if (useAimCorrection)
+        if(collision.tag == "Sign")
         {
-            if (Horizontal == 0 && Vertical < 0.8f)
-                Horizontal = 0.3f * flip;
-            if (Vertical == 0)
-                Vertical = 1;
+            interactable = null;
+            Info.gameObject.SetActive(false);
+            Dialog.SetActive(false);
         }
+    }
 
-        return new Vector3(Horizontal, Vertical, 0).normalized;
+    private Vector3 GetDirection(bool useAimCorrection = true, bool fromPlayer = false)
+    {
+        if (useController)
+        {
+            float Horizontal = Input.GetAxis("Horizontal");
+            float Vertical = Input.GetAxis("Vertical");
+
+            if (useAimCorrection)
+            {
+                if (Horizontal == 0 && Vertical < 0.8f)
+                    Horizontal = 0.3f * flip;
+                if (Vertical == 0)
+                    Vertical = 1;
+            }
+
+            return new Vector3(Horizontal, Vertical, 0).normalized;
+        }
+        else if(!fromPlayer)
+        {
+            Vector3 direction = Input.mousePosition;
+            direction.x -= Screen.width / 2;
+            direction.y -= Screen.height / 2;
+            direction.Normalize();
+
+            if (Mathf.Abs(direction.y) < Screen.width / 15)
+            {
+                print("0");
+                return new Vector3(0, 0, 0);
+            }
+
+            print(direction);
+            return direction;
+        }
+        else
+        {
+            Vector2 direction = Camera.main.ScreenToWorldPoint(new Vector3(Input.mousePosition.x, Input.mousePosition.y, transform.position.z)) - transform.position;
+            return direction.normalized;
+        }
     }
 }
 

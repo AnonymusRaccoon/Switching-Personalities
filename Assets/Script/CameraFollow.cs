@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-public class Camera : MonoBehaviour
+public class CameraFollow : MonoBehaviour
 {
     public bool FollowY = true;
     public float offsetY;
