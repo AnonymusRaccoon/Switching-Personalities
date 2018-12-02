@@ -28,5 +28,10 @@ public class Slime : MonoBehaviour
             Destroy(collision.gameObject);
             Destroy(gameObject);
         }
+        else if (collision.gameObject.tag == "PushProjectile")
+        {
+            rb.velocity = collision.gameObject.GetComponent<Rigidbody2D>().velocity * 5;
+            Destroy(collision.gameObject);
+        }
     }
 }

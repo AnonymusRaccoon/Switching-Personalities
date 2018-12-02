@@ -410,7 +410,7 @@ public class PlayerMovement : MonoBehaviour
         if(personalty == Personalty.SlowProj && Input.GetButtonDown("Action"))
         {
             GameObject proj = Instantiate(SlowProjectile, transform.position + Vector3.right * flip, Quaternion.identity);
-            proj.GetComponent<Rigidbody2D>().velocity = GetDirection(true, true) * projSpeed;
+            proj.GetComponent<Rigidbody2D>().velocity = GetDirection(null, true) * projSpeed;
         }
 
         //Parry
@@ -556,6 +556,21 @@ public class PlayerMovement : MonoBehaviour
                 Damage(1);
             }
         }
+        else if (collision.gameObject.tag == "PushProjectile")
+        {
+            if (parrying)
+            {
+                rb.AddForce(new Vector2(0, parryForce), ForceMode2D.Impulse);
+                Destroy(collision.gameObject);
+                parrying = false;
+                animator.SetBool("isJumping", isJumping);
+            }
+            else
+            {
+                rb.velocity = collision.gameObject.GetComponent<Rigidbody2D>().velocity * 5;
+                Destroy(collision.gameObject);
+            }
+        }
         else if (collision.gameObject.tag == "DeathZone")
             Death();
         else if(collision.gameObject.tag == "Door")
@@ -658,19 +673,22 @@ public class PlayerMovement : MonoBehaviour
         }
     }
 
-    private Vector3 GetDirection(bool useAimCorrection = true, bool fromPlayer = false)
+    private Vector3 GetDirection(bool? useAimCorrection = true, bool fromPlayer = false)
     {
         if (useController)
         {
             float Horizontal = Input.GetAxis("Horizontal");
             float Vertical = Input.GetAxis("Vertical");
 
-            if (useAimCorrection)
+            if (useAimCorrection == true)
+            {
+                if (Vertical == 0)
+                    Vertical = 1;
+            }
+            if(useAimCorrection == null)
             {
                 if (Horizontal == 0 && Vertical < 0.8f)
                     Horizontal = 0.3f * flip;
-                if (Vertical == 0)
-                    Vertical = 1;
             }
 
             return new Vector3(Horizontal, Vertical, 0).normalized;
