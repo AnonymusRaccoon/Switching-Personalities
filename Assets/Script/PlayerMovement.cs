@@ -50,7 +50,7 @@ public class PlayerMovement : MonoBehaviour
 
     [Space]
     [Space]
-    [Header("SwitchMenu")]
+    [Header("Menues")]
     public GameObject switchMenu;
     public GameObject none;
     public GameObject doubleJump;
@@ -59,27 +59,33 @@ public class PlayerMovement : MonoBehaviour
     public GameObject healer;
     public GameObject parry;
     public GameObject hook;
+    public GameObject DeathScreen;
+    public GameObject[] HealPoints;
     private Personalty switchingTo;
 
     private Personalty personalty;
+    private Vector3 checkPoint;
     private int HealPoint = 5;
     private bool isJumping = false;
     private int flip = 1;
     private bool switching = false;
     private bool parrying = false;
     private Rigidbody2D rb;
+    private new BoxCollider2D collider;
 
 
     private void Start()
     {
         rb = GetComponent<Rigidbody2D>();
+        collider = GetComponentInChildren<BoxCollider2D>();
+        checkPoint = transform.position;
     }
 
     private bool IsGrounded
     {
         get
         {
-            if (Physics2D.Raycast(transform.position, Vector2.down, groundDistance, objectMask))
+            if (Physics2D.BoxCast(transform.position, new Vector2(collider.bounds.size.x, groundDistance), 270, Vector2.down, groundDistance, objectMask))
                 return true;
                 
             return false;
@@ -88,10 +94,10 @@ public class PlayerMovement : MonoBehaviour
 
     private bool RunningOnAWall(float Horizontal)
     {
-        if (Horizontal > 0 && Physics2D.BoxCast(transform.position, new Vector2(minWallDistance, GetComponentInChildren<BoxCollider2D>().bounds.size.y), 0, Vector2.right, minWallDistance, objectMask))
+        if (Horizontal > 0 && Physics2D.BoxCast(transform.position, new Vector2(minWallDistance, collider.bounds.size.y), 0, Vector2.right, minWallDistance, objectMask))
             return true;
 
-        if (Horizontal < 0 && Physics2D.BoxCast(transform.position, new Vector2(minWallDistance, GetComponentInChildren<BoxCollider2D>().bounds.size.y), 180, Vector2.left, minWallDistance, objectMask))
+        if (Horizontal < 0 && Physics2D.BoxCast(transform.position, new Vector2(minWallDistance, collider.bounds.size.y), 180, Vector2.left, minWallDistance, objectMask))
             return true;
 
         return false;
@@ -99,36 +105,22 @@ public class PlayerMovement : MonoBehaviour
 
     private void Update ()
     {
-        //Basic movements and runner
-        if(Mathf.Abs(Input.GetAxis("Horizontal")) > 0.2f)
-            flip = Input.GetAxis("Horizontal") > 0 ? 1 : -1;
-
-        renderer.flipX = flip == -1;
-
-        if (!hooked)
+        if(Time.timeScale == 0)
         {
-            if (!RunningOnAWall(Input.GetAxis("Horizontal")))
+            if (Input.anyKeyDown)
             {
-                rb.velocity = new Vector3(Input.GetAxis("Horizontal") * speed * (personalty == Personalty.Run ? runnerSpeed : 1), rb.velocity.y, 0);
-                animator.SetBool("isRunning", Mathf.Abs(Input.GetAxis("Horizontal")) > .3f);
-            }
-            else
-                rb.velocity = new Vector3(0, rb.velocity.y, 0);
+                transform.position = checkPoint;
+                renderer.enabled = true;
 
-            if (Input.GetButtonDown("Jump") && IsGrounded)
-            {
-                rb.AddForce(new Vector2(0, jumpForce), ForceMode2D.Impulse);
-                isJumping = true;
-                animator.SetBool("isJumping", isJumping);
+                HealPoint = 5;
+                foreach (GameObject hp in HealPoints)
+                    hp.SetActive(true);
+
+                Time.timeScale = 1;
+                DeathScreen.SetActive(false);
             }
 
-            if (Input.GetButtonUp("Jump") && rb.velocity.y > 0.8f && !IsGrounded && isJumping)
-            {
-                isJumping = false;
-                rb.velocity = new Vector2(rb.velocity.x, 0);
-                rb.AddForce(new Vector2(0, -jumpDownForce * rb.velocity.y / 9), ForceMode2D.Impulse);
-                animator.SetBool("isJumping", isJumping);
-            }
+            return;
         }
 
         //Personality Switch
@@ -141,7 +133,7 @@ public class PlayerMovement : MonoBehaviour
         else if (switching)
         {
             Vector3 direction = GetDirection(false);
-            if(direction == new Vector3(0, 0, 0))
+            if (direction == new Vector3(0, 0, 0))
             {
                 none.transform.localScale = new Vector3(1.6f, 1.6f, 1.6f);
                 switchingTo = Personalty.Normal;
@@ -158,7 +150,7 @@ public class PlayerMovement : MonoBehaviour
                 float angle = Vector3.Angle(direction, Vector3.right);
                 if (Input.GetAxis("Vertical") < 0)
                     angle = 360 - angle;
-                if(angle >= 0 && angle < 60)
+                if (angle >= 0 && angle < 60)
                 {
                     run.transform.localScale = new Vector3(1.6f, 1.6f, 1.6f);
                     switchingTo = Personalty.Run;
@@ -243,9 +235,45 @@ public class PlayerMovement : MonoBehaviour
             }
         }
 
+        if (switching)
+            return;
+
+        //Basic movements and runner
+        if(Mathf.Abs(Input.GetAxis("Horizontal")) > 0.2f)
+            flip = Input.GetAxis("Horizontal") > 0 ? 1 : -1;
+
+        renderer.flipX = flip == -1;
+
+        if (!hooked)
+        {
+            if (!RunningOnAWall(Input.GetAxis("Horizontal")))
+            {
+                rb.velocity = new Vector3(Input.GetAxis("Horizontal") * speed * (personalty == Personalty.Run ? runnerSpeed : 1), rb.velocity.y, 0);
+                animator.SetBool("isRunning", Mathf.Abs(Input.GetAxis("Horizontal")) > .3f);
+            }
+            else
+                rb.velocity = new Vector3(0, rb.velocity.y, 0);
+
+            if (Input.GetButtonDown("Jump") && IsGrounded)
+            {
+                rb.AddForce(new Vector2(0, jumpForce), ForceMode2D.Impulse);
+                isJumping = true;
+                animator.SetBool("isJumping", isJumping);
+            }
+
+            if (Input.GetButtonUp("Jump") && rb.velocity.y > 0.8f && !IsGrounded && isJumping)
+            {
+                isJumping = false;
+                rb.velocity = new Vector2(rb.velocity.x, 0);
+                rb.AddForce(new Vector2(0, -jumpDownForce * rb.velocity.y / 9), ForceMode2D.Impulse);
+                animator.SetBool("isJumping", isJumping);
+            }
+        }
+
         //Double Jump
         if (personalty == Personalty.DoubleJump && Input.GetButtonDown("Jump") && hasDoubleJump && !IsGrounded)
         {
+            rb.velocity = new Vector2(rb.velocity.x, 0);
             rb.AddForce(new Vector2(0, doubleJumpForce), ForceMode2D.Impulse);
             hasDoubleJump = false;
             animator.SetBool("isJumping", isJumping);
@@ -339,11 +367,11 @@ public class PlayerMovement : MonoBehaviour
         if(personalty == Personalty.Heal && HealPoint < 5)
         {
             HealPoint++;
-            GameObject.Find("HealPoint (" + HealPoint + ")").SetActive(true);
+            HealPoints[HealPoint - 1].SetActive(true);
             if(HealPoint < 5)
             {
                 HealPoint++;
-                GameObject.Find("HealPoint (" + HealPoint + ")").SetActive(true);
+                HealPoints[HealPoint - 1].SetActive(true);
             }
         }
         healParticules.SetActive(false);
@@ -365,7 +393,7 @@ public class PlayerMovement : MonoBehaviour
         {
             Damage(1);
         }
-        else if(collision.gameObject.tag == "Projectile")
+        else if (collision.gameObject.tag == "Projectile")
         {
             if (parrying)
             {
@@ -380,6 +408,8 @@ public class PlayerMovement : MonoBehaviour
                 Damage(1);
             }
         }
+        else if (collision.gameObject.tag == "DeathZone")
+            Death();
         if (HealPoint <= 0)
             Death();
     }
@@ -388,14 +418,27 @@ public class PlayerMovement : MonoBehaviour
     {
         for(int i = 0; i < dmg; i++)
         {
-            GameObject.Find("HealPoint (" + HealPoint + ")").SetActive(false);
+            HealPoints[HealPoint - 1].SetActive(false);
             HealPoint--;
         }
     }
 
     private void Death()
     {
-        //ON VERA APRES
+        DeathScreen.SetActive(true);
+        renderer.enabled = false;
+        Time.timeScale = 0;
+        foreach (GameObject hp in HealPoints)
+            hp.SetActive(false);
+    }
+
+    private void OnTriggerEnter2D(Collider2D collision)
+    {
+        if (collision.tag == "CheckPoint")
+        {
+            checkPoint = transform.position;
+            //Play a sound
+        }
     }
 
     private Vector3 GetDirection(bool useAimCorrection = true)

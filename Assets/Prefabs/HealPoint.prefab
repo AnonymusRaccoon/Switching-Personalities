@@ -22,7 +22,7 @@ GameObject:
   - component: {fileID: 212243839519132172}
   m_Layer: 8
   m_Name: HealPoint
-  m_TagString: Untagged
+  m_TagString: HealPoint
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
