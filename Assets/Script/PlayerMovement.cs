@@ -78,11 +78,20 @@ public class PlayerMovement : MonoBehaviour
     private Rigidbody2D rb;
     private new BoxCollider2D collider;
 
-    private void Start()
+    private async void Start()
     {
         rb = GetComponent<Rigidbody2D>();
         collider = GetComponentInChildren<BoxCollider2D>();
         checkPoint = transform.position;
+
+        if (Input.GetJoystickNames().Length > 0)
+        {
+            useController = true;
+            Info.text = "Gamepad detected, setting keybind for the gamepad. Don't want to use the gamepad ? Press Escape to switch back to the keyboard.";
+            Info.gameObject.SetActive(true);
+            await Task.Delay(5000);
+            Info.gameObject.SetActive(false);
+        }
     }
 
     private bool IsGrounded
@@ -107,6 +116,22 @@ public class PlayerMovement : MonoBehaviour
         return false;
     }
 
+    private async void SwitchToController()
+    {
+        Info.text = "Switching to controller. Press Escape to switch back to the keyboard.";
+        Info.gameObject.SetActive(true);
+        await Task.Delay(5000);
+        Info.gameObject.SetActive(false);
+    }
+
+    private async void SwitchToKeyboard()
+    {
+        Info.text = "Switching to keyboard. Press Escape to switch back to the controller.";
+        Info.gameObject.SetActive(true);
+        await Task.Delay(5000);
+        Info.gameObject.SetActive(false);
+    }
+
     private void Update ()
     {
         if(Time.timeScale == 0)
@@ -125,6 +150,21 @@ public class PlayerMovement : MonoBehaviour
             }
 
             return;
+        }
+
+        //Switch from keyboard to controller and vice versa
+        if (Input.GetKeyDown(KeyCode.Escape))
+        {
+            if (useController)
+            {
+                useController = false;
+                SwitchToKeyboard();
+            }
+            else
+            {
+                useController = true;
+                SwitchToController();
+            }
         }
 
         //Personality Switch
@@ -503,15 +543,14 @@ public class PlayerMovement : MonoBehaviour
             Vector3 direction = Input.mousePosition;
             direction.x -= Screen.width / 2;
             direction.y -= Screen.height / 2;
-            direction.Normalize();
 
-            if (Mathf.Abs(direction.y) < Screen.width / 15)
+            if (Mathf.Abs(direction.y) < Screen.height / 10 && Mathf.Abs(direction.x) < Screen.width / 10)
             {
-                print("0");
+                print(Mathf.Abs(direction.y) + " " + Screen.height / 10);
                 return new Vector3(0, 0, 0);
             }
 
-            print(direction);
+            direction.Normalize();
             return direction;
         }
         else
