@@ -8,6 +8,11 @@ TagManager:
   - DeathZone
   - HealPoint
   - Sign
+  - CheckPoint
+  - Teleporter
+  - Door
+  - Key
+  - Projectile
   layers:
   - Default
   - TransparentFX

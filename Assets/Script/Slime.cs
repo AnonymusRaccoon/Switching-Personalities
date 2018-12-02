@@ -20,4 +20,13 @@ public class Slime : MonoBehaviour
             nextJump = Random.Range(1, 5);
         }
     }
+
+    private void OnCollisionEnter2D(Collision2D collision)
+    {
+        if (collision.gameObject.tag == "Projectile")
+        {
+            Destroy(collision.gameObject);
+            Destroy(gameObject);
+        }
+    }
 }
