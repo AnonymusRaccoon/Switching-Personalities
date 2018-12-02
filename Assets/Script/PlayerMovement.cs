@@ -180,6 +180,8 @@ public class PlayerMovement : MonoBehaviour
 
                 personalty = Personalty.Normal;
                 PersonalityRenderer.sprite = PersonalitySprites[(int)Personalty.Normal];
+
+                transform.position = GameObject.Find("SacrificeEnd").transform.position;
             }
         }
 
@@ -614,6 +616,7 @@ public class PlayerMovement : MonoBehaviour
     {
         if (collision.tag == "CheckPoint")
         {
+            Destroy(collision.gameObject);
             checkPoint = transform.position;
             effectSource.clip = checkpointClip;
             effectSource.Play();
