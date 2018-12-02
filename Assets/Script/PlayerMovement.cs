@@ -340,13 +340,11 @@ public class PlayerMovement : MonoBehaviour
                 if(Input.GetAxis("Horizontal") < 0)
                 {
                     Vector2 ortho = new Vector2(vector.y, -vector.x);
-                    Debug.DrawLine(transform.position, transform.position + (Vector3)ortho);
                     rb.AddForce(ortho * swingSpeed, ForceMode2D.Force);
                 }
                 else
                 {
                     Vector2 ortho = new Vector2(-vector.y, vector.x);
-                    Debug.DrawLine(transform.position, transform.position + (Vector3)ortho);
                     rb.AddForce(ortho * swingSpeed, ForceMode2D.Force);
                 }
             }
